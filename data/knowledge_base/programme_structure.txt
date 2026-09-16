@@ -1,0 +1,42 @@
+DATA SCIENCE AND BUSINESS ANALYTICS PROGRAMME STRUCTURE
+University of Ghana Business School (UGBS)
+
+This document describes the course structure, credit requirements, and prerequisites for the
+BSc Data Science and Business Analytics programme. Each academic year, students are expected
+to complete 32 credit hours (16 credits per semester) to remain on track for graduation in four years.
+
+YEAR 1 CORE COURSES (32 credits)
+- OMIS 101: Introduction to Information Systems (4 credits). No prerequisite.
+- OMIS 104: Fundamentals of Computing (4 credits). No prerequisite.
+- STAT 111: Introduction to Statistics (4 credits). No prerequisite.
+- ACCT 101: Principles of Accounting I (4 credits). No prerequisite.
+(Remaining credits made up of general education and elective courses.)
+
+YEAR 2 CORE COURSES (32 credits)
+- OMIS 201: Business Data Analysis (4 credits). Prerequisite: OMIS 104 and STAT 111.
+- OMIS 204: Database Management Systems (4 credits). Prerequisite: OMIS 101.
+- STAT 212: Probability and Statistical Inference (4 credits). Prerequisite: STAT 111.
+- OMIS 210: Systems Analysis and Design (4 credits). Prerequisite: OMIS 101.
+
+YEAR 3 CORE COURSES (32 credits)
+- OMIS 301: Data Mining and Machine Learning (4 credits). Prerequisite: OMIS 201 and STAT 212.
+- OMIS 305: Business Process Management (4 credits). Prerequisite: OMIS 210.
+- OMIS 308: Enterprise Resource Planning Systems (4 credits). Prerequisite: OMIS 204.
+- STAT 314: Applied Regression Analysis (4 credits). Prerequisite: STAT 212.
+
+YEAR 4 CORE COURSES (32 credits)
+- OMIS 401: Big Data Analytics (4 credits). Prerequisite: OMIS 301.
+- OMIS 404: AI Applications in Business (4 credits). Prerequisite: OMIS 301.
+- OMIS 407: Business Intelligence and Decision Support Systems (4 credits). Prerequisite: OMIS 301 and OMIS 305.
+- OMIS 410: Long Essay / Capstone Project (4 credits). Prerequisite: Completion of all Year 3 core courses.
+
+ELECTIVE COURSES (Year 3 and Year 4 students may choose from these, subject to seat availability)
+- OMIS 320: Cloud Computing for Business (4 credits). Prerequisite: OMIS 204.
+- OMIS 330: Cybersecurity Fundamentals (4 credits). Prerequisite: OMIS 204.
+- OMIS 415: Natural Language Processing for Business Applications (4 credits). Prerequisite: OMIS 301.
+- OMIS 420: Digital Transformation Strategy (4 credits). No additional prerequisite beyond Year 3 standing.
+
+NOTES ON CROSS-DEPARTMENT COURSES
+Students taking electives outside the department (e.g. Finance, Marketing) must confirm seat
+availability and prerequisite compatibility directly with the offering department, as those
+prerequisites are not administered by Data Science and Business Analytics.

@@ -1,0 +1,37 @@
+COURSE DESCRIPTIONS
+Data Science and Business Analytics Department, UGBS
+
+OMIS 201: Business Data Analysis
+Introduces students to the process of collecting, cleaning, and analyzing business data to
+support decision-making, using spreadsheet and introductory statistical tools. Builds directly
+on OMIS 104 and STAT 111.
+
+OMIS 204: Database Management Systems
+Covers relational database design, SQL, normalization, and the role of databases in business
+information systems. Considered a foundational course for most Year 3 and Year 4 electives
+involving data infrastructure.
+
+OMIS 301: Data Mining and Machine Learning
+Introduces supervised and unsupervised machine learning techniques (classification, clustering,
+regression) and their application to business problems such as customer segmentation and
+demand prediction. This is a gateway course: most Year 4 courses (OMIS 401, OMIS 404, OMIS 407)
+require it as a prerequisite.
+
+OMIS 404: AI Applications in Business
+Examines how organizations design, build, and evaluate AI-enabled systems for real business and
+administrative problems, including generative AI, AI agents, and analytical decision support.
+Includes a term project applying these concepts to a practical scenario.
+
+OMIS 410: Long Essay / Capstone Project
+An independent research project completed in the final year, supervised by a faculty member,
+applying data science or business analytics methods to a real or realistic business problem.
+Requires completion of all Year 3 core courses before registration.
+
+OMIS 415: Natural Language Processing for Business Applications (Elective)
+Covers techniques for extracting insight from unstructured text data (customer reviews, support
+tickets, social media) and applying them to business contexts. Builds on the machine learning
+foundations from OMIS 301.
+
+OMIS 420: Digital Transformation Strategy (Elective)
+Examines how organizations plan and manage large-scale technology-driven change, with case
+studies from various industries. Open to all Year 3 and Year 4 students in good academic standing.
