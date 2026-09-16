@@ -20,7 +20,7 @@ Advising and Student Progress Support).
   calling to decide, per question, whether to retrieve from the knowledge
   base, check a specific student's progress, list at-risk students, or some
   combination, then composes a final answer.
-- **Interface** — `app (1).py` is a Streamlit app with two tabs: a student
+- **Interface** — `app.py` is a Streamlit app with two tabs: a student
   chat (talks to the agent) and an advisor dashboard (talks to the
   rule-based tool directly, no LLM involved).
 
@@ -29,7 +29,7 @@ Advising and Student Progress Support).
 ### 1. Install dependencies
 
 ```powershell
-pip install -r requirements_app.txt
+pip install -r requirements.txt
 ```
 
 ### 2. Generate the synthetic student dataset
@@ -72,7 +72,7 @@ python agent.py      # runs the full agent on two sample questions
 Run the full app:
 
 ```powershell
-python -m streamlit run '.\app (1).py'
+python -m streamlit run app.py
 ```
 
 Opens at http://localhost:8501. The Advisor Dashboard tab works without a
@@ -82,11 +82,11 @@ Gemini API key (rule-based only); the Student Chat tab requires it.
 
 ```
 agent.py                     # Gemini agent orchestrator (tool calling)
-app (1).py                   # Streamlit interface
+app.py                       # Streamlit interface
 rag.py                       # Knowledge base indexing + retrieval
 tools.py                     # Rule-based student progress classifier
 generate_student_data.py     # Synthetic student dataset generator
-requirements_app.txt         # Python dependencies
+requirements.txt             # Python dependencies
 data/
   knowledge_base/*.txt       # Programme documents (source for RAG)
   student_records.csv        # Generated synthetic student data (gitignored)
