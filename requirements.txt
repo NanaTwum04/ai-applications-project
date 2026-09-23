@@ -1,5 +1,7 @@
 google-genai
 chromadb
 sentence-transformers
-streamlit
+fastapi
+uvicorn
 pandas
+python-dotenv

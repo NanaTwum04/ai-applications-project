@@ -20,9 +20,21 @@ Advising and Student Progress Support).
   calling to decide, per question, whether to retrieve from the knowledge
   base, check a specific student's progress, list at-risk students, or some
   combination, then composes a final answer.
-- **Interface** — `app.py` is a Streamlit app with two tabs: a student
-  chat (talks to the agent) and an advisor dashboard (talks to the
-  rule-based tool directly, no LLM involved).
+- **Interface** — `server.py` is a FastAPI server that serves the web app in
+  `web/` and exposes the layers above as a JSON API. The web app has a
+  student view (chat with the agent, which knows the signed-in student's ID)
+  and an advisor dashboard (roster, risk ranking, analytics and an advisor
+  chat console). The dashboard data comes straight from the rule-based tool;
+  only the chat uses the LLM.
+
+  | Endpoint | Backed by |
+  |---|---|
+  | `GET /api/students` | `tools.list_all_students` |
+  | `GET /api/students/{id}` | `tools.check_student_progress` |
+  | `GET /api/at-risk` | `tools.list_at_risk_students` |
+  | `GET /api/knowledge-base` | `data/knowledge_base/*.txt` |
+  | `POST /api/chat` | `agent.ask_with_sources` |
+  | `GET /api/health` | whether `GEMINI_API_KEY` is set |
 
 ## Setup
 
@@ -49,15 +61,15 @@ Programme documents already live in `data/knowledge_base/`:
 
 ### 4. Get a Gemini API key
 
-Get a free key at https://aistudio.google.com/apikey, then set it for your
-terminal session:
+Get a free key at https://aistudio.google.com/apikey, then copy
+`.env.example` to `.env` in the project root and put your key in it:
 
-```powershell
-$env:GEMINI_API_KEY="your-key-here"
+```
+GEMINI_API_KEY=your-key-here
 ```
 
-This only lasts for the current terminal session — set it again next time
-you open a new one.
+`.env` is gitignored, so the key never gets committed. It's loaded
+automatically by `agent.py` (and so by `server.py`).
 
 ## Running
 
@@ -72,17 +84,27 @@ python agent.py      # runs the full agent on two sample questions
 Run the full app:
 
 ```powershell
-python -m streamlit run app.py
+python server.py
 ```
 
-Opens at http://localhost:8501. The Advisor Dashboard tab works without a
-Gemini API key (rule-based only); the Student Chat tab requires it.
+Then open http://localhost:8000. If `data/student_records.csv` doesn't exist
+yet, the server generates it on startup.
+
+Demo sign-ins:
+
+- **Student** — any student ID from `data/student_records.csv`
+  (e.g. `10910001`), password `ugbs2026`
+- **Advisor** — username `zaydan`, password `advisor2026`
+
+The advisor dashboard works without a Gemini API key (rule-based only); the
+chat requires it.
 
 ## Project structure
 
 ```
 agent.py                     # Gemini agent orchestrator (tool calling)
-app.py                       # Streamlit interface
+server.py                    # FastAPI server: JSON API + serves web/
+web/                         # Web interface (HTML/CSS/JS)
 rag.py                       # Knowledge base indexing + retrieval
 tools.py                     # Rule-based student progress classifier
 generate_student_data.py     # Synthetic student dataset generator

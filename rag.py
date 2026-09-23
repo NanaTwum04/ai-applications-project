@@ -23,6 +23,12 @@ embedding_fn = embedding_functions.SentenceTransformerEmbeddingFunction(
 )
 
 
+def source_title(source_name):
+    """Human-readable title for a knowledge base file stem, for citations
+    (e.g. "progression_rules" -> "Progression Rules")."""
+    return source_name.replace("_", " ").title()
+
+
 def chunk_document(text, source_name):
     """Split a knowledge base document into paragraph-level chunks.
 

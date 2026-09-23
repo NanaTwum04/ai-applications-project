@@ -150,6 +150,31 @@ def list_at_risk_students(include_borderline=True):
     return results
 
 
+def list_all_students():
+    """Return every student record with its classification, for the web
+    dashboard (which needs the full roster, not just flagged students).
+    """
+    df = _load_students()
+    students = []
+    for _, row in df.iterrows():
+        status, reasons = classify_student(row)
+        failed = row["failed_courses"]
+        students.append({
+            "student_id": row["student_id"],
+            "name": f"{row['first_name']} {row['last_name']}",
+            "year": int(row["year"]),
+            "advisor": row["advisor"],
+            "sem_gpas": [float(row[f"semester_{i}_gpa"]) for i in range(1, 5)],
+            "cumulative_gpa": float(row["cumulative_gpa"]),
+            "failed_courses": failed.split(";") if isinstance(failed, str) and failed else [],
+            "credits_completed": int(row["credits_completed"]),
+            "credits_required_to_date": int(row["credits_required_to_date"]),
+            "status": status,
+            "reasons": reasons,
+        })
+    return students
+
+
 if __name__ == "__main__":
     # Quick self-test: validate our rule-based flags against the ground-truth
     # profile_label baked into the synthetic dataset (see generate_student_data.py).

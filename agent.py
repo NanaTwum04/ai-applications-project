@@ -8,16 +8,21 @@ whether to:
   (c) both,
 before composing a final natural-language answer.
 
-Requires a GEMINI_API_KEY environment variable (get one free at
-https://aistudio.google.com/apikey).
+Requires a GEMINI_API_KEY environment variable or an entry in a .env file
+in the project root (get one free at https://aistudio.google.com/apikey).
 """
 
 import os
 import json
+from pathlib import Path
+from dotenv import load_dotenv
 from google import genai
 from google.genai import types
 
-from rag import retrieve
+# Pick up GEMINI_API_KEY from .env so it doesn't have to be set per terminal.
+load_dotenv(Path(__file__).parent / ".env")
+
+from rag import retrieve, source_title
 from tools import check_student_progress, list_at_risk_students
 
 MODEL_NAME = "gemini-3.6-flash"
@@ -103,12 +108,34 @@ def _call_tool(name, args):
         return {"error": f"Unknown tool {name}"}
 
 
-def ask(user_message, history=None):
+TOOL_SOURCE = "Rule-based progress classifier"
+
+
+def _sources_for(name, result):
+    """Citation labels for a tool call, shown under the answer in the web app."""
+    if name == "retrieve_knowledge_base":
+        return [source_title(r["source"]) for r in result["results"]]
+    if name in ("check_student_progress", "list_at_risk_students"):
+        return [TOOL_SOURCE]
+    return []
+
+
+def ask(user_message, history=None, student_id=None):
     """Send a message to the agent, letting it call tools as needed, and
     return the final natural-language answer.
 
     `history` is an optional list of prior {"role": ..., "text": ...} turns
     for basic conversational context.
+    """
+    return ask_with_sources(user_message, history, student_id)["answer"]
+
+
+def ask_with_sources(user_message, history=None, student_id=None):
+    """Like ask(), but returns {"answer": ..., "sources": [...]} where sources
+    lists the knowledge base documents and tools the answer was built from.
+
+    `student_id` is the signed-in student's ID, if any, so questions like
+    "am I on track?" can be answered without the student typing their ID.
     """
     api_key = os.environ.get("GEMINI_API_KEY")
     if not api_key:
@@ -126,10 +153,19 @@ def ask(user_message, history=None):
             contents.append(types.Content(role=role, parts=[types.Part(text=turn["text"])]))
     contents.append(types.Content(role="user", parts=[types.Part(text=user_message)]))
 
+    system_instruction = SYSTEM_INSTRUCTION
+    if student_id:
+        system_instruction += (
+            f"\nThe person chatting is the signed-in student with ID {student_id}. "
+            "When they ask about their own progress, GPA, or standing, use this ID."
+        )
+
     config = types.GenerateContentConfig(
-        system_instruction=SYSTEM_INSTRUCTION,
+        system_instruction=system_instruction,
         tools=TOOLS,
     )
+
+    sources = []
 
     # Allow a few rounds of tool calling before forcing a final answer.
     for _ in range(5):
@@ -142,18 +178,24 @@ def ask(user_message, history=None):
         ]
 
         if not function_calls:
-            return response.text
+            return {"answer": response.text, "sources": sources}
 
         contents.append(candidate.content)
         tool_response_parts = []
         for fc in function_calls:
             result = _call_tool(fc.name, dict(fc.args))
+            for source in _sources_for(fc.name, result):
+                if source not in sources:
+                    sources.append(source)
             tool_response_parts.append(
                 types.Part.from_function_response(name=fc.name, response=result)
             )
         contents.append(types.Content(role="user", parts=tool_response_parts))
 
-    return "I wasn't able to complete that request after several tool calls. Please rephrase your question."
+    return {
+        "answer": "I wasn't able to complete that request after several tool calls. Please rephrase your question.",
+        "sources": sources,
+    }
 
 
 if __name__ == "__main__":
