@@ -318,10 +318,41 @@
   }
   greet();
 
+  // Minimal markdown for agent answers: **bold**, headings, bullet and
+  // numbered lists, paragraphs. Input is escaped before any tags are added.
+  function renderMarkdown(text) {
+    const inline = s => escapeHTML(s).replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+    const out = [];
+    let list = null; // "ul" | "ol"
+    let para = [];
+    const flushPara = () => { if (para.length) { out.push(`<p class="md-p">${para.join("<br>")}</p>`); para = []; } };
+    const closeList = () => { if (list) { out.push(`</${list}>`); list = null; } };
+
+    String(text).split("\n").forEach(line => {
+      const bullet = line.match(/^\s*[*-]\s+(.*)$/);
+      const numbered = line.match(/^\s*\d+[.)]\s+(.*)$/);
+      const heading = line.match(/^\s*#{1,6}\s+(.*)$/);
+      if (bullet || numbered) {
+        const type = bullet ? "ul" : "ol";
+        flushPara();
+        if (list !== type) { closeList(); out.push(`<${type} class="md-list">`); list = type; }
+        out.push(`<li>${inline((bullet || numbered)[1])}</li>`);
+      } else if (heading) {
+        flushPara(); closeList();
+        out.push(`<p class="md-p"><strong>${inline(heading[1])}</strong></p>`);
+      } else if (!line.trim()) {
+        flushPara(); closeList();
+      } else {
+        closeList();
+        para.push(inline(line));
+      }
+    });
+    flushPara(); closeList();
+    return out.join("");
+  }
+
   function renderBubble(text, sources, declined) {
-    let html = escapeHTML(text)
-      .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
-      .replace(/\n/g, "<br>");
+    let html = renderMarkdown(text);
     if (sources && sources.length) {
       html += `<div class="msg-source">${ICONS.doc} Source${sources.length > 1 ? "s" : ""}: ${sources.join(" &amp; ")}</div>`;
     }
@@ -936,8 +967,8 @@
       const div = document.createElement("div");
       div.className = "rail-msg " + role;
       div.innerHTML = role === "assistant"
-        ? `<span class="rail-avatar"><svg class="icon" viewBox="0 0 24 24"><rect x="4" y="8" width="16" height="12" rx="2"/><path d="M12 8V4M9 14h.01M15 14h.01"/></svg></span><p>${html}</p>`
-        : `<p>${html}</p>`;
+        ? `<span class="rail-avatar"><svg class="icon" viewBox="0 0 24 24"><rect x="4" y="8" width="16" height="12" rx="2"/><path d="M12 8V4M9 14h.01M15 14h.01"/></svg></span><div class="rail-text">${html}</div>`
+        : `<div class="rail-text">${html}</div>`;
       thread.appendChild(div);
       thread.scrollTop = thread.scrollHeight;
       return div;

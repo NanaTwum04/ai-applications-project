@@ -50,7 +50,7 @@ def classify_student(row):
         status = "at_risk"
         reasons.append(
             f"{row['num_failed_courses']} core courses failed "
-            f"({row['failed_courses']}); retake policy allows a maximum of two "
+            f"({row['failed_courses'].replace(';', ', ')}); retake policy allows a maximum of two "
             f"attempts before Head of Department referral."
         )
 
