@@ -14,11 +14,13 @@ the Gemini agent, and the rule-based progress tool to it as a small JSON API:
 Run with:  python server.py   then open http://localhost:8000
 """
 
+import logging
 import os
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
 from fastapi.staticfiles import StaticFiles
+from google.genai import errors as genai_errors
 from pydantic import BaseModel
 
 import generate_student_data
@@ -38,6 +40,19 @@ if not STUDENT_RECORDS_CSV.exists():
     generate_student_data.main()
 
 app = FastAPI(title="UGBS Advising Assistant")
+log = logging.getLogger("advising")
+
+# Plain-language messages for Gemini API failures, by HTTP status. Users see
+# these; the full error goes to the server log.
+AI_ERROR_MESSAGES = {
+    429: "The assistant has reached its usage limit for now. Please try again "
+         "in a minute, or later today if the daily limit has been used up.",
+    401: "The assistant isn't configured correctly (the AI service rejected "
+         "its API key). Please let the project team know.",
+    403: "The assistant isn't configured correctly (the AI service refused "
+         "access). Please let the project team know.",
+}
+AI_UNAVAILABLE = "The assistant is temporarily unavailable. Please try again shortly."
 
 
 class ChatTurn(BaseModel):
@@ -96,8 +111,13 @@ def chat(req: ChatRequest):
             history=[t.model_dump() for t in req.history],
             student_id=req.student_id,
         )
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Something went wrong: {e}")
+    except genai_errors.APIError as e:
+        log.error("Gemini API error %s: %s", e.code, e)
+        status = e.code if e.code in AI_ERROR_MESSAGES else 503
+        raise HTTPException(status_code=status, detail=AI_ERROR_MESSAGES.get(e.code, AI_UNAVAILABLE))
+    except Exception:
+        log.exception("Chat request failed")
+        raise HTTPException(status_code=500, detail="Something went wrong while answering. Please try again.")
 
 
 # Mounted last so the /api routes above take precedence.
