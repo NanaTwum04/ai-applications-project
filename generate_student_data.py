@@ -10,7 +10,7 @@ import random
 import csv
 from pathlib import Path
 
-random.seed(42)  # reproducible output
+SEED = 42  # reproducible output
 
 OUTPUT = Path(__file__).parent / "data" / "student_records.csv"
 OUTPUT.parent.mkdir(parents=True, exist_ok=True)
@@ -109,6 +109,10 @@ def generate_student(index, profile, year):
     }
 
 def main():
+    # Seed here rather than at import time: when the server imports this
+    # module, other libraries imported afterwards consume random numbers,
+    # which would otherwise produce a different dataset on each host.
+    random.seed(SEED)
     rows = []
     index = 1
 
