@@ -106,4 +106,8 @@ app.mount("/", StaticFiles(directory=WEB_DIR, html=True), name="web")
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="127.0.0.1", port=8000)
+    # Hosting platforms (e.g. Render) set PORT and need the server reachable
+    # from outside; locally this still runs on http://localhost:8000.
+    port = int(os.environ.get("PORT", 8000))
+    host = "0.0.0.0" if "PORT" in os.environ else "127.0.0.1"
+    uvicorn.run(app, host=host, port=port)

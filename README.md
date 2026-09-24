@@ -99,6 +99,22 @@ Demo sign-ins:
 The advisor dashboard works without a Gemini API key (rule-based only); the
 chat requires it.
 
+## Deploying (Render free tier)
+
+The app fits in Render's free 512 MB instance: embeddings run through ONNX
+Runtime rather than PyTorch (about 270 MB in use).
+
+1. On render.com, create a **Web Service** from this GitHub repo.
+2. Settings: runtime **Python 3**, build command
+   `pip install -r requirements.txt`, start command `python server.py`,
+   instance type **Free**.
+3. Environment variables: `GEMINI_API_KEY` (your key) and
+   `PYTHON_VERSION` = `3.13.5`.
+
+Render sets `PORT`, and the server listens on it automatically. Free
+instances sleep after 15 minutes idle; the first visit afterwards takes
+about a minute.
+
 ## Project structure
 
 ```

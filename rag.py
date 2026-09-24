@@ -2,8 +2,8 @@
 Builds and queries the RAG knowledge base (Section 8: KNOWLEDGE / DATA layer).
 
 Loads the three knowledge base documents, splits them into paragraph-sized
-chunks, embeds them with a local sentence-transformers model, and stores
-them in a persistent ChromaDB collection for retrieval.
+chunks, embeds them with a local all-MiniLM-L6-v2 model, and stores them in
+a persistent ChromaDB collection for retrieval.
 """
 
 from pathlib import Path
@@ -17,10 +17,10 @@ CHROMA_DIR = PROJECT_ROOT / "chroma_db"
 COLLECTION_NAME = "advising_knowledge_base"
 
 # Local embedding model (no API key needed, runs on your machine).
-# This is the same model family used across the course's earlier lessons.
-embedding_fn = embedding_functions.SentenceTransformerEmbeddingFunction(
-    model_name="all-MiniLM-L6-v2"
-)
+# This is the all-MiniLM-L6-v2 model used across the course's earlier
+# lessons, run through ONNX Runtime instead of PyTorch so the app fits in
+# a small (512 MB) hosting instance.
+embedding_fn = embedding_functions.ONNXMiniLM_L6_V2()
 
 
 def source_title(source_name):

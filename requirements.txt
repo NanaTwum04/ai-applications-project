@@ -1,6 +1,5 @@
 google-genai
 chromadb
-sentence-transformers
 fastapi
 uvicorn
 pandas
